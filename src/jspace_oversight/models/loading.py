@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from jspace_oversight.config import ModelConfig
@@ -18,6 +20,50 @@ class LoadedModel:
 
 def _torch_dtype(name: str, torch: Any) -> Any:
     return "auto" if name == "auto" else getattr(torch, name)
+
+
+def _revision_from_cache_path(path: str | os.PathLike[str] | None) -> str | None:
+    """Extract a Hugging Face commit SHA from a snapshots cache path."""
+    if path is None:
+        return None
+    parts = Path(path).parts
+    try:
+        snapshot_index = parts.index("snapshots")
+        revision = parts[snapshot_index + 1]
+    except (ValueError, IndexError):
+        return None
+    return revision or None
+
+
+def _resolve_model_revision(
+    model_id: str,
+    requested_revision: str | None,
+    model: Any,
+    tokenizer: Any,
+) -> str | None:
+    """Resolve the immutable Hub revision without making a network request."""
+    candidates = [
+        getattr(model.config, "_commit_hash", None),
+        getattr(model.config, "commit_hash", None),
+        getattr(tokenizer, "init_kwargs", {}).get("_commit_hash"),
+        getattr(tokenizer, "init_kwargs", {}).get("commit_hash"),
+    ]
+    if resolved := next((value for value in candidates if value), None):
+        return str(resolved)
+
+    try:
+        from huggingface_hub import try_to_load_from_cache
+
+        cached_config = try_to_load_from_cache(
+            model_id,
+            "config.json",
+            revision=requested_revision or "main",
+        )
+    except (ImportError, OSError, ValueError):
+        return None
+    if not isinstance(cached_config, (str, os.PathLike)):
+        return None
+    return _revision_from_cache_path(cached_config)
 
 
 def load_causal_lm(config: ModelConfig) -> LoadedModel:
@@ -49,7 +95,12 @@ def load_causal_lm(config: ModelConfig) -> LoadedModel:
         dtype=_torch_dtype(dtype_name, torch),
     ).to(device)
     model.eval()
-    resolved = getattr(model.config, "_commit_hash", None)
+    resolved = _resolve_model_revision(
+        config.model_id,
+        config.revision,
+        model,
+        tokenizer,
+    )
     return LoadedModel(model, tokenizer, config.revision, resolved)
 
 

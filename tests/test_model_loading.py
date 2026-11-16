@@ -2,7 +2,12 @@ import sys
 from types import ModuleType, SimpleNamespace
 
 from jspace_oversight.config import ModelConfig
-from jspace_oversight.models.loading import format_prompt, load_causal_lm
+from jspace_oversight.models.loading import (
+    _resolve_model_revision,
+    _revision_from_cache_path,
+    format_prompt,
+    load_causal_lm,
+)
 
 
 class Factory:
@@ -66,3 +71,22 @@ def test_format_prompt_uses_chat_template_when_available() -> None:
 
     assert format_prompt(Tokenizer(), "hello", use_chat_template=True) == "formatted"
     assert format_prompt(Tokenizer(), "hello", use_chat_template=False) == "hello"
+
+
+def test_revision_from_hugging_face_cache_path() -> None:
+    revision = "a" * 40
+    path = f"/cache/models--org--model/snapshots/{revision}/config.json"
+    assert _revision_from_cache_path(path) == revision
+    assert _revision_from_cache_path("/cache/config.json") is None
+
+
+def test_resolve_revision_falls_back_to_cache(monkeypatch) -> None:
+    revision = "b" * 40
+    fake_hub = ModuleType("huggingface_hub")
+    fake_hub.try_to_load_from_cache = lambda *args, **kwargs: (
+        f"/cache/models--org--model/snapshots/{revision}/config.json"
+    )
+    monkeypatch.setitem(sys.modules, "huggingface_hub", fake_hub)
+    model = SimpleNamespace(config=SimpleNamespace())
+    tokenizer = SimpleNamespace(init_kwargs={})
+    assert _resolve_model_revision("org/model", None, model, tokenizer) == revision
