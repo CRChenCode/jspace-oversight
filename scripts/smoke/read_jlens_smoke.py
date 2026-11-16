@@ -17,6 +17,12 @@ def main() -> None:
     parser.add_argument("--prompt", required=True)
     parser.add_argument("--layer", type=int, default=10)
     parser.add_argument("--position", type=int, default=-2)
+    parser.add_argument(
+        "--positions",
+        type=int,
+        nargs="+",
+        help="Read multiple positions in one model load; overrides --position.",
+    )
     parser.add_argument("--top-k", type=int, default=10)
     args = parser.parse_args()
 
@@ -32,6 +38,7 @@ def main() -> None:
             "Install the interpretability dependency group first"
         ) from error
     wrapped = jlens.from_hf(loaded.model, loaded.tokenizer)
+    positions = args.positions if args.positions is not None else [args.position]
     result = apply_readouts(
         wrapped,
         loaded.tokenizer,
@@ -40,7 +47,7 @@ def main() -> None:
         model_id=config.model_id,
         model_revision=loaded.resolved_revision or loaded.requested_revision,
         layers=[args.layer],
-        positions=[args.position],
+        positions=positions,
         top_k=args.top_k,
     )
     save_readouts([result], args.output)

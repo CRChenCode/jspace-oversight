@@ -8,7 +8,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
-from .metrics import top_k_entries
+from .metrics import as_numpy, top_k_entries
 
 
 class TokenScore(BaseModel):
@@ -23,6 +23,8 @@ class LayerReadout(BaseModel):
     method: Literal["jacobian_lens", "logit_lens"]
     layer: int
     position: int
+    input_token_id: int | None = None
+    input_token: str | None = None
     rankings: list[TokenScore]
 
 
@@ -33,6 +35,7 @@ class PromptReadout(BaseModel):
     model_revision: str | None
     lens_path: str
     lens_n_prompts: int | None
+    input_token_count: int | None = None
     readouts: list[LayerReadout]
     warning: str = (
         "Raw vocabulary rankings are not probabilities, calibrated risk scores, "
@@ -47,24 +50,39 @@ def _rank(
     tokenizer: Any,
     top_k: int,
     method: Literal["jacobian_lens", "logit_lens"],
+    input_ids: Any | None = None,
 ) -> list[LayerReadout]:
     results: list[LayerReadout] = []
+    token_ids = None
+    if input_ids is not None:
+        token_ids = as_numpy(input_ids)
+        if token_ids.ndim == 2 and token_ids.shape[0] == 1:
+            token_ids = token_ids[0]
+        if token_ids.ndim != 1:
+            raise ValueError("input_ids must have shape [seq_len] or [1, seq_len]")
     for layer, logits in sorted(logits_by_layer.items()):
         for row_index, position in enumerate(positions):
-            token_ids, scores = top_k_entries(logits[row_index], top_k)
+            ranked_ids, scores = top_k_entries(logits[row_index], top_k)
             rankings = [
                 TokenScore(
                     token_id=token_id,
                     token=tokenizer.decode([token_id]),
                     score=score,
                 )
-                for token_id, score in zip(token_ids, scores, strict=True)
+                for token_id, score in zip(ranked_ids, scores, strict=True)
             ]
+            input_token_id = int(token_ids[position]) if token_ids is not None else None
             results.append(
                 LayerReadout(
                     method=method,
                     layer=layer,
                     position=position,
+                    input_token_id=input_token_id,
+                    input_token=(
+                        tokenizer.decode([input_token_id])
+                        if input_token_id is not None
+                        else None
+                    ),
                     rankings=rankings,
                 )
             )
@@ -94,7 +112,7 @@ def apply_readouts(
 
     path = Path(lens_path)
     lens = jlens.JacobianLens.load(str(path))
-    jacobian_logits, _, _ = lens.apply(
+    jacobian_logits, _, input_ids = lens.apply(
         model,
         prompt,
         layers=layers,
@@ -108,6 +126,7 @@ def apply_readouts(
         tokenizer=tokenizer,
         top_k=top_k,
         method="jacobian_lens",
+        input_ids=input_ids,
     )
     if include_logit_lens:
         baseline_logits, _, _ = lens.apply(
@@ -125,6 +144,7 @@ def apply_readouts(
                 tokenizer=tokenizer,
                 top_k=top_k,
                 method="logit_lens",
+                input_ids=input_ids,
             )
         )
     return PromptReadout(
@@ -133,6 +153,7 @@ def apply_readouts(
         model_revision=model_revision,
         lens_path=str(path),
         lens_n_prompts=getattr(lens, "n_prompts", None),
+        input_token_count=int(as_numpy(input_ids).shape[-1]),
         readouts=readouts,
     )
 

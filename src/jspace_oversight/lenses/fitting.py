@@ -184,7 +184,11 @@ def run_fitting_experiment(config_path: str | Path) -> Path:
         source_layers=fitting.source_layers,
         runtime_seconds=runtime,
         peak_gpu_memory_bytes=peak_memory,
-        output_artifacts=[str(fitting.output_lens_path), str(metadata_path)],
+        output_artifacts=[
+            str(fitting.checkpoint_path),
+            str(fitting.output_lens_path),
+            str(metadata_path),
+        ],
     )
     provenance.save(metadata_path)
     return fitting.output_lens_path
