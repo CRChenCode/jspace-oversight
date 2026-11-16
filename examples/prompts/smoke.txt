@@ -1,0 +1,1 @@
+Reliable scientific experiments record their inputs, software versions, random seeds, hardware details, and output artifacts so that later researchers can audit and reproduce each result.

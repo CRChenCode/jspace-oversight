@@ -1,0 +1,6 @@
+model_id: Qwen/Qwen3-4B
+revision: null
+dtype: bfloat16
+device: cuda
+trust_remote_code: false
+use_chat_template: true

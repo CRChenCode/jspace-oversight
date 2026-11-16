@@ -1,0 +1,8 @@
+account: yyao69_super
+partition: a100
+gres: gpu:1
+cpus_per_task: 4
+memory: 32G
+python_module: python/3.11.9
+virtualenv: /home/jhu/cchen343/research/jspace-oversight/.venv
+scratch_root: /scratch/jhu/yyao69/jspace-oversight

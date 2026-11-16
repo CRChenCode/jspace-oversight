@@ -1,0 +1,13 @@
+experiment_id: qwen3-4b-jlens-pilot
+model_config: configs/models/qwen3_4b.yaml
+prompt_corpus: data/prompts/pilot.jsonl
+source_layers: [4, 8, 12, 16, 20, 24, 28, 32]
+target_layer: null
+max_seq_len: 128
+dim_batch: 8
+skip_first: 16
+checkpoint_path: artifacts/checkpoints/pilot-fit.pt
+checkpoint_every: 5
+resume: true
+output_lens_path: artifacts/lenses/qwen3-4b-pilot.pt
+seed: 0

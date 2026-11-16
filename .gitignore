@@ -1,0 +1,52 @@
+# Python and test tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# Environments and credentials
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# IDE and macOS
+.DS_Store
+.idea/
+.vscode/
+
+# Models, caches, checkpoints, and large experiment data
+.cache/
+huggingface/
+/models/
+artifacts/
+data/
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.ckpt
+*.arrow
+*.parquet
+trajectories/
+
+# Runtime output (keep only documentation/placeholders)
+slurm-*.out
+*.log
+results/**
+!results/README.md
+
+# Prevent common nested research clones
+jacobian-lens/
+agentdojo/
+tau2-bench/
