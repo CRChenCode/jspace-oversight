@@ -41,6 +41,8 @@ scripts/cluster/logs.sh
 scripts/cluster/logs.sh 1913654
 scripts/cluster/artifacts.sh
 scripts/cluster/readout-summary.sh multiposition
+scripts/cluster/readout-summary.sh pilot-validation
+scripts/cluster/readout-analysis.sh
 ```
 
 Remote state changes requiring explicit approval:
