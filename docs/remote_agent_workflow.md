@@ -40,6 +40,7 @@ scripts/cluster/job.sh 1913654
 scripts/cluster/logs.sh
 scripts/cluster/logs.sh 1913654
 scripts/cluster/artifacts.sh
+scripts/cluster/readout-summary.sh multiposition
 ```
 
 Remote state changes requiring explicit approval:

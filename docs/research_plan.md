@@ -18,6 +18,15 @@ Validate Jacobian versus vanilla logit-lens readouts across layers, positions,
 prompts, seeds, and corpus choices. Extract only state legitimately available at
 the decision point. Completion of fitting is not scientific validation.
 
+The next proposed fitting corpus follows the
+[reference implementation](https://github.com/anthropics/jacobian-lens)'s
+deterministic WikiText-103 convention: the first 100 training records containing
+at least 600 characters, truncated by the lens tokenizer to 128 tokens. The
+dataset revision and generated-corpus checksum must be recorded before fitting.
+This pilot has not yet been prepared or run. The reference paper used 1,000
+pretraining-like 128-token sequences; 100 prompts is an infrastructure-scale
+pilot rather than a paper-grade reproduction.
+
 ### 2. Agent evaluation
 
 Begin with roughly 100–200 AgentDojo episodes, subject to compatibility and

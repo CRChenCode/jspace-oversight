@@ -42,3 +42,38 @@ agent intent, or need for human oversight.
 CPU tests validate configuration, paths, provenance, schemas, and synthetic
 readout ranking. They do not validate Qwen inference, Jacobian fitting, GPU
 memory, scientific validity, or oversight effectiveness.
+
+## Reproduced infrastructure smoke run
+
+The newly bootstrapped repository subsequently completed its first end-to-end
+Skipjack smoke workflow. Unlike the historical results above, these runs were
+generated from committed repository code and external Scratch artifacts.
+
+| Item | Repository-run result |
+|---|---|
+| Repository commit used for fitting | `65e0d448d125e778fe47777aa3e0147d89463310` |
+| Model revision | `1cfa9a7208912126459214e8b04321603b3df60c` |
+| Fitting Slurm job | `1913654` (`COMPLETED`, exit `0:0`) |
+| GPU | NVIDIA A100-SXM4-80GB |
+| Fitting corpus | One bundled neutral provenance prompt |
+| Source layer | 10 |
+| `dim_batch` / `max_seq_len` | 8 / 64 |
+| Fitting runtime | 12.853937715000939 seconds |
+| Peak allocated GPU memory | 8,906,936,832 bytes |
+| Lens dimension / prompt count | 2560 / 1 |
+| Lens artifact | `qwen3-4b-smoke.pt` in external Scratch storage |
+| Multiposition readout Slurm allocation | `1943967` |
+| Multiposition readout positions | `-19, -11, -7, -6, -5, -2, -1` |
+
+The multiposition prompt described an untrusted webpage requesting that private
+data be sent externally. At message-ending positions, the one-prompt Jacobian
+lens ranked tokens such as `reproduce`, `improve`, `precisely`, and `exactly`,
+which resemble the neutral fitting prompt more than the evaluation prompt's risk
+content. The vanilla logit-lens rankings were also not coherently risk-related.
+This is an observation of strong corpus-specific bias in an intentionally
+underfit smoke lens, not evidence for or against latent risk recognition.
+
+The original `position=-2` readout was found to correspond to the chat-template
+`assistant` role token. The multiposition rerun therefore included content-token,
+message-boundary, template-control, and pre-generation positions. Raw scores
+remain uncalibrated vocabulary logits.

@@ -28,5 +28,11 @@ printf 'scratch_root=%s\n' "${scratch_root}"
 test -d "${project_root}/.git"
 test -x "${venv_path}/bin/python"
 test -d "${scratch_root}"
+token_path="${HOME}/.config/huggingface/token"
+if [[ -f "${token_path}" ]]; then
+  printf 'hf_token_file=present mode=%s\n' "$(stat -c '%a' "${token_path}")"
+else
+  printf 'hf_token_file=missing expected=%s\n' "${token_path}"
+fi
 REMOTE
 fi
