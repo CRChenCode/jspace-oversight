@@ -46,3 +46,14 @@ open issues/PRs, SSH to Skipjack, install remote packages, submit/cancel jobs, o
 alter remote environments without explicit authorization. GPU work belongs in a
 Slurm allocation, never a login node. Large outputs go to Scratch, and only small
 reviewable metadata/summaries may return to Git.
+
+## Mac-to-Skipjack wrappers
+
+For explicitly authorized Skipjack work from a Mac, use only the versioned
+commands in `scripts/cluster/`; do not construct a direct `ssh` command. Read-only
+status, job, log, and artifact inspection may be run when the user asks to inspect
+Skipjack. `pull.sh` and every `submit.sh` invocation require explicit user
+authorization because they change remote or scheduler state. The submission
+wrapper exposes only smoke jobs and intentionally excludes pilot fitting. Never
+cancel jobs, submit a pilot, edit remote files directly, or alter the remote
+environment through these wrappers without separate authorization.

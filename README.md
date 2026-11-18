@@ -144,4 +144,5 @@ diff manually. Do not enable Git LFS or commit nested clones by default.
 - [Experiment protocol](docs/experiment_protocol.md)
 - [Development workflow](docs/development_workflow.md)
 - [Skipjack setup](docs/skipjack_setup.md)
+- [Mac agent to Skipjack workflow](docs/remote_agent_workflow.md)
 - [Historical experimental progress](docs/experimental_progress.md)
