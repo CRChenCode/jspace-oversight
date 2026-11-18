@@ -52,11 +52,13 @@ class FittingConfig(StrictModel):
 
 class EvaluationConfig(StrictModel):
     experiment_id: str
+    model_config_path: Path = Field(alias="model_config")
     prompts_path: Path
     lens_path: Path
     layers: list[int] = Field(min_length=1)
     positions: list[int] = Field(default_factory=lambda: [-2])
     top_k: int = Field(default=10, ge=1)
+    max_seq_len: int = Field(default=512, ge=2)
     include_logit_lens: bool = True
     output_path: Path
 

@@ -112,6 +112,39 @@ def apply_readouts(
 
     path = Path(lens_path)
     lens = jlens.JacobianLens.load(str(path))
+    return apply_loaded_readouts(
+        model,
+        tokenizer,
+        prompt,
+        lens=lens,
+        lens_path=path,
+        model_id=model_id,
+        model_revision=model_revision,
+        layers=layers,
+        positions=positions,
+        top_k=top_k,
+        max_seq_len=max_seq_len,
+        include_logit_lens=include_logit_lens,
+    )
+
+
+def apply_loaded_readouts(
+    model: Any,
+    tokenizer: Any,
+    prompt: str,
+    *,
+    lens: Any,
+    lens_path: str | Path,
+    model_id: str,
+    model_revision: str | None,
+    layers: list[int],
+    positions: list[int],
+    top_k: int,
+    max_seq_len: int = 512,
+    include_logit_lens: bool = True,
+) -> PromptReadout:
+    """Apply an already loaded lens so batched evaluations avoid reload cost."""
+    path = Path(lens_path)
     jacobian_logits, _, input_ids = lens.apply(
         model,
         prompt,

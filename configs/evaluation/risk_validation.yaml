@@ -1,8 +1,10 @@
 experiment_id: risk-validation-pilot
-prompts_path: data/prompts/risk_validation.jsonl
+model_config: configs/models/qwen3_4b.yaml
+prompts_path: examples/prompts/risk_validation.jsonl
 lens_path: artifacts/lenses/qwen3-4b-pilot.pt
 layers: [4, 8, 12, 16, 20, 24, 28, 32]
-positions: [-2]
+positions: [-2, -1]
 top_k: 10
+max_seq_len: 256
 include_logit_lens: true
-output_path: results/risk-validation/readouts.json
+output_path: artifacts/readouts/qwen3-4b-pilot-risk-validation.json

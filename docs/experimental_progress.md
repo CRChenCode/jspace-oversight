@@ -77,3 +77,26 @@ The original `position=-2` readout was found to correspond to the chat-template
 `assistant` role token. The multiposition rerun therefore included content-token,
 message-boundary, template-control, and pre-generation positions. Raw scores
 remain uncalibrated vocabulary logits.
+
+## WikiText pilot fitting run
+
+The repository then completed the planned infrastructure-scale fitting pilot.
+This establishes that the larger pipeline runs; it does not validate oversight
+performance.
+
+| Item | Repository-run result |
+|---|---|
+| Repository commit | `93e2fcf39bd922b957af6d2c1e0ce8a9471a9577` |
+| Slurm job | `1944569` (`COMPLETED`, exit `0:0`) |
+| Slurm elapsed time | 36 minutes 50 seconds |
+| Corpus | 100 deterministic WikiText-103 records, minimum 600 stripped characters |
+| Corpus SHA-256 | `7c8831ea1fd60b0581221dda28d45562fd5036ab6f9ff78050a35218a838e003` |
+| Source layers | 4, 8, 12, 16, 20, 24, 28, 32 |
+| Maximum sequence length | 128 tokens |
+| Lens artifact | `qwen3-4b-pilot.pt` in external Scratch storage (104,861,103 bytes) |
+| Checkpoint | `pilot-fit.pt` in external Scratch storage (209,718,795 bytes) |
+
+The next validation uses four paired control/risk scenarios at chat-template
+positions `-2` and `-1`, records Jacobian- and logit-lens rankings, and benchmarks
+latency against a hidden-state-producing forward pass. Because the prompts
+contain explicit risk cues and the sample is small, this is only a sanity check.

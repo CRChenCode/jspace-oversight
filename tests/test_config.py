@@ -3,7 +3,12 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from jspace_oversight.config import FittingConfig, ModelConfig, load_config
+from jspace_oversight.config import (
+    EvaluationConfig,
+    FittingConfig,
+    ModelConfig,
+    load_config,
+)
 
 
 def test_load_model_config(tmp_path: Path) -> None:
@@ -34,3 +39,9 @@ def test_fitting_config_rejects_impossible_sequence_length() -> None:
     }
     with pytest.raises(ValidationError, match="max_seq_len"):
         FittingConfig.model_validate(values)
+
+
+def test_repository_evaluation_config() -> None:
+    config = load_config("configs/evaluation/risk_validation.yaml", EvaluationConfig)
+    assert config.layers == [4, 8, 12, 16, 20, 24, 28, 32]
+    assert config.positions == [-2, -1]

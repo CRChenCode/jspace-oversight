@@ -1,6 +1,6 @@
 import numpy as np
 
-from jspace_oversight.lenses.readout import _rank
+from jspace_oversight.lenses.readout import _rank, apply_loaded_readouts
 
 
 class Tokenizer:
@@ -35,3 +35,36 @@ def test_readout_rejects_batched_input_ids() -> None:
             method="logit_lens",
             input_ids=np.zeros((2, 3)),
         )
+
+
+def test_apply_loaded_readouts_reuses_supplied_lens() -> None:
+    class Lens:
+        n_prompts = 100
+
+        def __init__(self) -> None:
+            self.calls = []
+
+        def apply(self, _model, _prompt, **kwargs):
+            self.calls.append(kwargs["use_jacobian"])
+            logits = {4: np.array([[0.0, 2.0, 1.0]])}
+            return logits, None, np.array([[8, 9, 10]])
+
+    lens = Lens()
+    result = apply_loaded_readouts(
+        object(),
+        Tokenizer(),
+        "prompt",
+        lens=lens,
+        lens_path="lens.pt",
+        model_id="org/model",
+        model_revision="revision",
+        layers=[4],
+        positions=[-1],
+        top_k=2,
+    )
+    assert lens.calls == [True, False]
+    assert result.lens_n_prompts == 100
+    assert [readout.method for readout in result.readouts] == [
+        "jacobian_lens",
+        "logit_lens",
+    ]
