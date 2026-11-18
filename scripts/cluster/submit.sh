@@ -7,9 +7,9 @@ case "${job_name}" in
   smoke_jlens) job_file='slurm/smoke_jlens.sbatch' ;;
   fit_smoke) job_file='slurm/fit_jlens_smoke.sbatch' ;;
   read_smoke) job_file='slurm/read_jlens_smoke.sbatch' ;;
+  fit_pilot) job_file='slurm/fit_pilot_lens.sbatch' ;;
   *)
-    echo 'Usage: scripts/cluster/submit.sh {smoke_qwen|smoke_jlens|fit_smoke|read_smoke}' >&2
-    echo 'Pilot submission is intentionally not exposed.' >&2
+    echo 'Usage: scripts/cluster/submit.sh {smoke_qwen|smoke_jlens|fit_smoke|read_smoke|fit_pilot}' >&2
     exit 2
     ;;
 esac
@@ -25,7 +25,7 @@ venv_path=$2
 scratch_root=$3
 job_file=$4
 case "${job_file}" in
-  slurm/smoke_qwen.sbatch|slurm/smoke_jlens.sbatch|slurm/fit_jlens_smoke.sbatch|slurm/read_jlens_smoke.sbatch) ;;
+  slurm/smoke_qwen.sbatch|slurm/smoke_jlens.sbatch|slurm/fit_jlens_smoke.sbatch|slurm/read_jlens_smoke.sbatch|slurm/fit_pilot_lens.sbatch) ;;
   *) echo 'Rejected non-allowlisted Slurm file.' >&2; exit 2 ;;
 esac
 cd "${project_root}"
