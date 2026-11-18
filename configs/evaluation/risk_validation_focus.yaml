@@ -1,0 +1,10 @@
+experiment_id: risk-validation-focus-exploratory
+model_config: configs/models/qwen3_4b.yaml
+prompts_path: examples/prompts/risk_validation.jsonl
+lens_path: artifacts/lenses/qwen3-4b-pilot.pt
+layers: [20]
+positions: [-1]
+top_k: 10
+max_seq_len: 256
+include_logit_lens: false
+output_path: artifacts/readouts/qwen3-4b-pilot-focus.json

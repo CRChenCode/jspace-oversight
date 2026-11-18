@@ -54,10 +54,10 @@ commands in `scripts/cluster/`; do not construct a direct `ssh` command. Read-on
 status, job, log, and artifact inspection may be run when the user asks to inspect
 Skipjack. `pull.sh` and every `submit.sh` invocation require explicit user
 authorization because they change remote or scheduler state. The submission
-wrapper exposes only named, versioned jobs. `fit_pilot` and `read_pilot` require
-separate, one-run authorization each time. Never cancel jobs, submit a pilot,
-edit remote files directly, or alter the remote environment through these
-wrappers without separate authorization.
+wrapper exposes only named, versioned jobs. `fit_pilot`, `read_pilot`, and
+`read_pilot_focus` require separate, one-run authorization each time. Never
+cancel jobs, submit a pilot, edit remote files directly, or alter the remote
+environment through these wrappers without separate authorization.
 `upload-corpus.sh` is the only approved data-upload path and also requires
 explicit authorization; it uploads only the fixed pilot corpus and metadata
 paths and verifies both checksums after transfer.

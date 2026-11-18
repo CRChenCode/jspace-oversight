@@ -55,13 +55,14 @@ scripts/cluster/submit.sh fit_smoke
 scripts/cluster/submit.sh read_smoke
 scripts/cluster/submit.sh fit_pilot
 scripts/cluster/submit.sh read_pilot
+scripts/cluster/submit.sh read_pilot_focus
 scripts/cluster/upload-corpus.sh
 ```
 
 `submit.sh` validates an allowlist on both the Mac and Skipjack, refuses a dirty
 remote worktree, exports the established runtime paths, and invokes a committed
-Slurm file. Each `fit_pilot` or `read_pilot` submission requires separate,
-explicit approval.
+Slurm file. Each `fit_pilot`, `read_pilot`, or `read_pilot_focus` submission
+requires separate, explicit approval.
 
 ## Prepare the pilot fitting corpus
 

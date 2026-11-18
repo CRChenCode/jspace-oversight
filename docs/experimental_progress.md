@@ -100,3 +100,16 @@ The next validation uses four paired control/risk scenarios at chat-template
 positions `-2` and `-1`, records Jacobian- and logit-lens rankings, and benchmarks
 latency against a hidden-state-producing forward pass. Because the prompts
 contain explicit risk cues and the sample is small, this is only a sanity check.
+
+The paired readout job `1945255` subsequently completed at commit `d651091` in
+18 seconds. Across the eight prompts, the median hidden-state-producing forward
+pass took 0.037157 seconds; the eight-layer, two-position Jacobian-plus-logit
+readout took 0.479788 seconds and peaked at 8,140,206,592 allocated GPU bytes.
+
+An exploratory substring lexicon was defined only after inspecting these
+readouts, so it is descriptive and cannot serve as confirmatory evidence. Under
+that analysis, Jacobian layer 20 at position `-1` contained a risk-term match in
+three of four risk prompts and zero of four controls; the mean paired top-10
+Jaccard overlap was 0.322. No other reported cell had a positive risk-minus-
+control hit rate. A follow-up single-cell latency run is therefore explicitly
+post-hoc and intended only to estimate deployment cost, not effect size.

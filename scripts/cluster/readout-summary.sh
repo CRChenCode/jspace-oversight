@@ -10,8 +10,9 @@ case "${readout_name}" in
   smoke) readout_file='qwen3-4b-smoke.json' ;;
   multiposition) readout_file='qwen3-4b-smoke-multiposition.json' ;;
   pilot-validation) readout_file='qwen3-4b-pilot-risk-validation.json' ;;
+  pilot-focus) readout_file='qwen3-4b-pilot-focus.json' ;;
   *)
-    echo 'Usage: scripts/cluster/readout-summary.sh {smoke|multiposition|pilot-validation}' >&2
+    echo 'Usage: scripts/cluster/readout-summary.sh {smoke|multiposition|pilot-validation|pilot-focus}' >&2
     exit 2
     ;;
 esac
@@ -23,7 +24,7 @@ venv_path=$2
 scratch_root=$3
 readout_file=$4
 case "${readout_file}" in
-  qwen3-4b-smoke.json|qwen3-4b-smoke-multiposition.json|qwen3-4b-pilot-risk-validation.json) ;;
+  qwen3-4b-smoke.json|qwen3-4b-smoke-multiposition.json|qwen3-4b-pilot-risk-validation.json|qwen3-4b-pilot-focus.json) ;;
   *) echo 'Rejected non-allowlisted readout file.' >&2; exit 2 ;;
 esac
 readout_path="${scratch_root}/artifacts/readouts/${readout_file}"

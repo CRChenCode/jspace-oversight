@@ -45,3 +45,10 @@ def test_repository_evaluation_config() -> None:
     config = load_config("configs/evaluation/risk_validation.yaml", EvaluationConfig)
     assert config.layers == [4, 8, 12, 16, 20, 24, 28, 32]
     assert config.positions == [-2, -1]
+
+    focus = load_config(
+        "configs/evaluation/risk_validation_focus.yaml", EvaluationConfig
+    )
+    assert focus.layers == [20]
+    assert focus.positions == [-1]
+    assert focus.include_logit_lens is False
