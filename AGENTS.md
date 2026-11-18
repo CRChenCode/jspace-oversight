@@ -57,3 +57,6 @@ authorization because they change remote or scheduler state. The submission
 wrapper exposes only smoke jobs and intentionally excludes pilot fitting. Never
 cancel jobs, submit a pilot, edit remote files directly, or alter the remote
 environment through these wrappers without separate authorization.
+`upload-corpus.sh` is the only approved data-upload path and also requires
+explicit authorization; it uploads only the fixed pilot corpus and metadata
+paths and verifies both checksums after transfer.

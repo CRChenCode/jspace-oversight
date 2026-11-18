@@ -65,6 +65,16 @@ This installs the official Jacobian Lens package directly from its GitHub
 repository. Installation does not download Qwen weights; weights are fetched
 only when a model-loading command is explicitly run.
 
+The pilot corpus has a separate optional dependency and deterministic builder:
+
+```bash
+python -m pip install -e ".[dev,data]"
+python scripts/data/prepare_pilot_corpus.py
+```
+
+This writes ignored JSONL and provenance metadata under `data/prompts/`; raw
+corpus content and downloaded dataset caches are never committed.
+
 ## Configuration and smoke commands
 
 All experimental settings live in YAML. The historical smoke shape is captured

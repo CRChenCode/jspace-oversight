@@ -32,6 +32,8 @@ huggingface/
 /models/
 artifacts/
 data/
+!scripts/data/
+!scripts/data/*.py
 *.pt
 *.pth
 *.safetensors

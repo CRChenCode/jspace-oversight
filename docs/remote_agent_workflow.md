@@ -51,11 +51,30 @@ scripts/cluster/submit.sh smoke_qwen
 scripts/cluster/submit.sh smoke_jlens
 scripts/cluster/submit.sh fit_smoke
 scripts/cluster/submit.sh read_smoke
+scripts/cluster/upload-corpus.sh
 ```
 
 `submit.sh` validates an allowlist on both the Mac and Skipjack, refuses a dirty
 remote worktree, exports the established runtime paths, and invokes a committed
 Slurm file. Pilot fitting is deliberately unavailable.
+
+## Prepare the pilot fitting corpus
+
+Prepare the pinned corpus on the Mac, where dataset download and validation do
+not consume a cluster login node or modify the remote Python environment:
+
+```bash
+python -m pip install -e ".[dev,data]"
+python scripts/data/prepare_pilot_corpus.py
+wc -l data/prompts/pilot.jsonl
+```
+
+The configuration in `configs/corpora/wikitext_103_pilot.yaml` selects the
+first 100 WikiText-103 training records whose stripped text contains at least
+600 characters. The dataset revision, source indices, Git state, and corpus
+SHA-256 are recorded beside the generated JSONL. Both generated files remain
+outside Git. With explicit approval, `upload-corpus.sh` copies only those two
+files to Scratch and checks their remote SHA-256 values.
 
 ## Recommended Codex prompt
 

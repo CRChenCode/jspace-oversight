@@ -1,6 +1,9 @@
+from pathlib import Path
+
 import pytest
 
 from jspace_oversight.lenses.fitting import (
+    resolve_runtime_path,
     validate_prompt_lengths,
     validate_source_layers,
 )
@@ -30,3 +33,15 @@ def test_validate_prompt_lengths_reports_corpus_indices() -> None:
             max_seq_len=64,
             skip_first=4,
         )
+
+
+def test_resolve_runtime_path_strips_logical_root(monkeypatch, tmp_path: Path) -> None:
+    external = tmp_path / "scratch-data"
+    monkeypatch.setenv("JSPACE_DATA_ROOT", str(external))
+    resolved = resolve_runtime_path(
+        Path("data/prompts/pilot.jsonl"),
+        project_root=tmp_path / "project",
+        external_root="JSPACE_DATA_ROOT",
+        strip_prefix="data",
+    )
+    assert resolved == external / "prompts/pilot.jsonl"

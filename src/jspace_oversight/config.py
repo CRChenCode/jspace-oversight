@@ -72,6 +72,18 @@ class ClusterConfig(StrictModel):
     scratch_root: Path
 
 
+class CorpusConfig(StrictModel):
+    experiment_id: str
+    dataset_id: str
+    dataset_config: str
+    dataset_revision: str
+    split: str = "train"
+    text_field: str = "text"
+    number_of_prompts: int = Field(default=100, ge=1)
+    minimum_characters: int = Field(default=600, ge=1)
+    output_path: Path
+
+
 def load_yaml(path: str | Path) -> dict[str, Any]:
     """Load a YAML mapping without applying a schema."""
     config_path = Path(path)

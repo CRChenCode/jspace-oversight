@@ -23,7 +23,8 @@ The next proposed fitting corpus follows the
 deterministic WikiText-103 convention: the first 100 training records containing
 at least 600 characters, truncated by the lens tokenizer to 128 tokens. The
 dataset revision and generated-corpus checksum must be recorded before fitting.
-This pilot has not yet been prepared or run. The reference paper used 1,000
+Corpus preparation is implemented, but the pilot has not yet been run. The
+reference paper used 1,000
 pretraining-like 128-token sequences; 100 prompts is an infrastructure-scale
 pilot rather than a paper-grade reproduction.
 

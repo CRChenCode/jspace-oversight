@@ -10,6 +10,25 @@ from typing import Any
 from jspace_oversight.config import FittingConfig
 
 
+def resolve_runtime_path(
+    value: Path,
+    *,
+    project_root: Path,
+    external_root: str | None = None,
+    strip_prefix: str | None = None,
+) -> Path:
+    """Resolve a configured path against the project or an external root."""
+    if value.is_absolute():
+        return value
+    override = os.environ.get(external_root) if external_root else None
+    if override:
+        parts = value.parts
+        if strip_prefix and parts[:1] == (strip_prefix,):
+            parts = parts[1:]
+        return Path(override).expanduser().joinpath(*parts)
+    return project_root / value
+
+
 def load_prompt_corpus(path: str | Path) -> list[str]:
     """Read non-empty JSONL ``text`` fields or one prompt per text line."""
     import json
@@ -111,26 +130,28 @@ def run_fitting_experiment(config_path: str | Path) -> Path:
     root = find_project_root(config_path)
     fitting = load_config(config_path, FittingConfig)
 
-    def runtime_path(value: Path, *, external_root: str | None = None) -> Path:
-        if value.is_absolute():
-            return value
-        override = os.environ.get(external_root) if external_root else None
-        if override:
-            suffix = (
-                value.parts[1:] if value.parts[:1] == ("artifacts",) else value.parts
-            )
-            return Path(override).expanduser().joinpath(*suffix)
-        return root / value
-
     fitting = fitting.model_copy(
         update={
-            "model_config_path": runtime_path(fitting.model_config_path),
-            "prompt_corpus": runtime_path(fitting.prompt_corpus),
-            "checkpoint_path": runtime_path(
-                fitting.checkpoint_path, external_root="JSPACE_ARTIFACT_ROOT"
+            "model_config_path": resolve_runtime_path(
+                fitting.model_config_path, project_root=root
             ),
-            "output_lens_path": runtime_path(
-                fitting.output_lens_path, external_root="JSPACE_ARTIFACT_ROOT"
+            "prompt_corpus": resolve_runtime_path(
+                fitting.prompt_corpus,
+                project_root=root,
+                external_root="JSPACE_DATA_ROOT",
+                strip_prefix="data",
+            ),
+            "checkpoint_path": resolve_runtime_path(
+                fitting.checkpoint_path,
+                project_root=root,
+                external_root="JSPACE_ARTIFACT_ROOT",
+                strip_prefix="artifacts",
+            ),
+            "output_lens_path": resolve_runtime_path(
+                fitting.output_lens_path,
+                project_root=root,
+                external_root="JSPACE_ARTIFACT_ROOT",
+                strip_prefix="artifacts",
             ),
         }
     )

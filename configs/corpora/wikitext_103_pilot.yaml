@@ -1,0 +1,9 @@
+experiment_id: wikitext-103-pilot-n100
+dataset_id: Salesforce/wikitext
+dataset_config: wikitext-103-raw-v1
+dataset_revision: b08601e04326c79dfdd32d625aee71d232d685c3
+split: train
+text_field: text
+number_of_prompts: 100
+minimum_characters: 600
+output_path: data/prompts/pilot.jsonl
