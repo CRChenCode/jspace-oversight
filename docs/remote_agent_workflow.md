@@ -56,6 +56,7 @@ scripts/cluster/submit.sh read_smoke
 scripts/cluster/submit.sh fit_pilot
 scripts/cluster/submit.sh read_pilot
 scripts/cluster/submit.sh read_pilot_focus
+scripts/cluster/submit.sh counterfactual_p4
 scripts/cluster/upload-corpus.sh
 ```
 
@@ -63,6 +64,9 @@ scripts/cluster/upload-corpus.sh
 remote worktree, exports the established runtime paths, and invokes a committed
 Slurm file. Each `fit_pilot`, `read_pilot`, or `read_pilot_focus` submission
 requires separate, explicit approval.
+
+`counterfactual_p4` runs the single-checkpoint Qwen/J-lens counterfactual smoke
+defined by `configs/demo/qwen.yaml`. It also requires separate, one-run approval.
 
 ## Prepare the pilot fitting corpus
 

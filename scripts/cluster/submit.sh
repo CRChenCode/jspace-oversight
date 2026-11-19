@@ -10,8 +10,9 @@ case "${job_name}" in
   fit_pilot) job_file='slurm/fit_pilot_lens.sbatch' ;;
   read_pilot) job_file='slurm/read_pilot_validation.sbatch' ;;
   read_pilot_focus) job_file='slurm/read_pilot_focus.sbatch' ;;
+  counterfactual_p4) job_file='slurm/counterfactual_gpu_demo.sbatch' ;;
   *)
-    echo 'Usage: scripts/cluster/submit.sh {smoke_qwen|smoke_jlens|fit_smoke|read_smoke|fit_pilot|read_pilot|read_pilot_focus}' >&2
+    echo 'Usage: scripts/cluster/submit.sh {smoke_qwen|smoke_jlens|fit_smoke|read_smoke|fit_pilot|read_pilot|read_pilot_focus|counterfactual_p4}' >&2
     exit 2
     ;;
 esac
@@ -27,7 +28,7 @@ venv_path=$2
 scratch_root=$3
 job_file=$4
 case "${job_file}" in
-  slurm/smoke_qwen.sbatch|slurm/smoke_jlens.sbatch|slurm/fit_jlens_smoke.sbatch|slurm/read_jlens_smoke.sbatch|slurm/fit_pilot_lens.sbatch|slurm/read_pilot_validation.sbatch|slurm/read_pilot_focus.sbatch) ;;
+  slurm/smoke_qwen.sbatch|slurm/smoke_jlens.sbatch|slurm/fit_jlens_smoke.sbatch|slurm/read_jlens_smoke.sbatch|slurm/fit_pilot_lens.sbatch|slurm/read_pilot_validation.sbatch|slurm/read_pilot_focus.sbatch|slurm/counterfactual_gpu_demo.sbatch) ;;
   *) echo 'Rejected non-allowlisted Slurm file.' >&2; exit 2 ;;
 esac
 cd "${project_root}"

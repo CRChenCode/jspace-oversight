@@ -1,0 +1,8 @@
+run_id: counterfactual-mvp-oracle-fixture
+scenarios_path: scenarios/fixtures/mvp.yaml
+scenario_ids: [private-summary-risky-v1]
+reviewer_type: oracle
+seeds: [0, 1, 2]
+risk_penalty: 5.0
+review_cost_weight: 0.1
+output_root: results

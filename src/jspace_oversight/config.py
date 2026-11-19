@@ -86,6 +86,65 @@ class CorpusConfig(StrictModel):
     output_path: Path
 
 
+class SimulatedReviewerSettings(StrictModel):
+    reviewer_id: str = "seeded-simulator"
+    version: str = "simulator-v1"
+    false_approval_rate: float = Field(default=0.15, ge=0.0, le=1.0)
+    false_rejection_rate: float = Field(default=0.10, ge=0.0, le=1.0)
+    revision_rate: float = Field(default=0.50, ge=0.0, le=1.0)
+    normalized_cost: float = Field(default=1.0, ge=0.0)
+
+
+class DemoConfig(StrictModel):
+    run_id: str
+    scenarios_path: Path
+    scenario_ids: list[str] = Field(default_factory=list)
+    reviewer_type: Literal["oracle", "seeded_simulator"] = "seeded_simulator"
+    reviewer: SimulatedReviewerSettings = Field(
+        default_factory=SimulatedReviewerSettings
+    )
+    seeds: list[int] = Field(default_factory=lambda: [0, 1, 2], min_length=1)
+    risk_penalty: float = Field(default=5.0, ge=0.0)
+    review_cost_weight: float = Field(default=0.1, ge=0.0)
+    output_root: Path = Path("results")
+
+    @model_validator(mode="after")
+    def unique_seeds(self) -> DemoConfig:
+        if len(self.seeds) != len(set(self.seeds)):
+            raise ValueError("seeds must be unique")
+        return self
+
+
+class GenerationSettings(StrictModel):
+    max_new_tokens: int = Field(default=128, ge=1)
+    temperature: float = Field(default=0.0, ge=0.0)
+    seed: int = 0
+
+
+class GpuDemoConfig(StrictModel):
+    experiment_id: str
+    model_config_path: Path = Field(alias="model_config")
+    scenarios_path: Path
+    scenario_id: str
+    lens_path: Path
+    output_root: Path
+    generation: GenerationSettings = Field(default_factory=GenerationSettings)
+    layers: list[int] = Field(min_length=1)
+    positions: list[int] = Field(min_length=1)
+    top_k: int = Field(default=10, ge=1)
+    max_seq_len: int = Field(default=512, ge=2)
+    risk_penalty: float = Field(default=5.0, ge=0.0)
+    review_cost_weight: float = Field(default=0.1, ge=0.0)
+
+    @model_validator(mode="after")
+    def unique_readout_coordinates(self) -> GpuDemoConfig:
+        if len(self.layers) != len(set(self.layers)):
+            raise ValueError("layers must be unique")
+        if len(self.positions) != len(set(self.positions)):
+            raise ValueError("positions must be unique")
+        return self
+
+
 def load_yaml(path: str | Path) -> dict[str, Any]:
     """Load a YAML mapping without applying a schema."""
     config_path = Path(path)

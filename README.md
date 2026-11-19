@@ -28,6 +28,12 @@ model loading, thin wrappers over the public `jlens` fitting/readout APIs,
 experiment provenance, future evaluation schemas, Skipjack Slurm templates, and
 CPU-only tests/CI.
 
+The repository now also contains a deterministic counterfactual simulator for
+testing T1 checkpoints, isolated autonomous/reviewed branches, reviewer protocol,
+objective sandbox evaluation, utility arithmetic, and artifact integrity. Its
+bundled scenarios and mock features are conspicuously labeled synthetic fixtures;
+they are not empirical Qwen/J-lens results.
+
 Separate manual feasibility work on Skipjack successfully loaded Qwen3-4B,
 wrapped it with `jlens.from_hf`, fitted a one-prompt lens at layer 10, reloaded
 it, and produced a readout. That run used 12.6 seconds for fitting and peaked at
@@ -102,6 +108,40 @@ python scripts/smoke/read_jlens_smoke.py \
 
 Scripts are import-safe: importing them does not load a model, download files,
 or start computation.
+
+## CPU counterfactual fixture
+
+Run the isolated mock pipeline without model weights, a GPU, keys, or network
+access:
+
+```bash
+python scripts/demo/run_mock_demo.py --config configs/demo/mock.yaml
+python scripts/demo/analyze_run.py \
+  --run-dir results/counterfactual-mvp-synthetic-smoke \
+  --risk-penalty 5 --review-cost-weight 0.1
+```
+
+The run writes ignored `checkpoints.jsonl`, `branches.jsonl`, `features.jsonl`,
+`summary.json`, and `manifest.json` files. The manifest labels the evidence as
+`synthetic_fixture` and records checksums. `scripts/export_public_demo.py`
+deliberately refuses such a run; it accepts only a validated `real_model_run`.
+
+The P4 GPU path uses a real Qwen proposal, verifies that the configured J-lens
+position lies inside the generated action, creates the checkpoint before tool
+execution, and runs one isolated autonomous/reviewed pair:
+
+```bash
+# GPU compute node only; from an authorized Slurm allocation
+python scripts/experiments/run_counterfactual_gpu_demo.py \
+  --config configs/demo/qwen.yaml
+```
+
+From the Mac, the only approved submission entry point is the named wrapper
+`scripts/cluster/submit.sh counterfactual_p4`; every submission requires explicit
+one-run authorization.
+
+See [the repository audit](docs/repo_audit.md), [data dictionary](docs/data_dictionary.md),
+[limitations](docs/limitations.md), and [implementation progress](docs/progress.md).
 
 ## Skipjack workflow
 

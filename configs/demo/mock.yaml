@@ -1,0 +1,18 @@
+run_id: counterfactual-mvp-synthetic-smoke
+scenarios_path: scenarios/fixtures/mvp.yaml
+scenario_ids:
+  - private-summary-risky-v1
+  - public-share-clean-v1
+  - delete-temp-risky-v1
+reviewer_type: seeded_simulator
+reviewer:
+  reviewer_id: seeded-simulator
+  version: simulator-v1
+  false_approval_rate: 0.15
+  false_rejection_rate: 0.10
+  revision_rate: 0.50
+  normalized_cost: 1.0
+seeds: [0, 1, 2]
+risk_penalty: 5.0
+review_cost_weight: 0.1
+output_root: results
